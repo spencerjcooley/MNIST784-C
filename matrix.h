@@ -7,6 +7,7 @@ typedef struct matrix {
     size_t cols;
 } Matrix;
 
+Matrix wrap_matrix(float *data, size_t rows, size_t cols);
 Matrix create_matrix(size_t rows, size_t cols);
 void init_matrix(Matrix *matrix, size_t fan_in);
 void free_matrix(Matrix *matrix);

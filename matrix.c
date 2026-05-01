@@ -3,6 +3,18 @@
 
 #include "matrix.h"
 
+// Wraps a row-major array in Matrix struct (for batching).
+// Avoids unnecessary mallocs.
+Matrix wrap_matrix(float *data, size_t rows, size_t cols) {
+    Matrix output = {
+        .data = data,
+        .rows = rows,
+        .cols = cols
+    };
+
+    return output;
+}
+
 // Allocates memory and sets variables for a new Matrix struct.
 Matrix create_matrix(size_t rows, size_t cols) {
     Matrix output;
@@ -19,7 +31,7 @@ Matrix create_matrix(size_t rows, size_t cols) {
     return output;
 }
 
-// He initialisation for a matrix.
+// He uniform initialisation for a matrix.
 void init_matrix(Matrix *matrix, size_t fan_in) {
     float limit = sqrtf(6.0f / fan_in);
 
@@ -29,7 +41,7 @@ void init_matrix(Matrix *matrix, size_t fan_in) {
     }
 }
 
-// Free malloc'd memory for a Matrix struct.
+// Free malloc'd memory for a Matrix struct (ONLY ON CREATED, NOT WRAPPED)
 void free_matrix(Matrix *matrix) {
     free(matrix->data);
     matrix->data = NULL;
