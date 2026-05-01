@@ -1,5 +1,41 @@
 #include <stdlib.h>
-#include "math.h"
+#include <math.h>
+
+#include "matrix.h"
+
+// Allocates memory and sets variables for a new Matrix struct.
+Matrix create_matrix(int rows, int cols) {
+    Matrix output;
+    output.rows = rows;
+    output.cols = cols;
+    output.data = malloc(rows * cols * sizeof(float));
+
+    if (!output.data) {
+        perror("Error allocating memory.\n");
+        output.rows = 0;
+        output.cols = 0;
+    }
+
+    return output;
+}
+
+// He initialisation for a matrix.
+void init_matrix(Matrix *matrix) {
+    float limit = sqrtf(6.0f / matrix->rows);
+
+    for (int i = 0; i < matrix->rows * matrix->cols; i++) {
+        float uniform = (float)rand() / (float)RAND_MAX;
+        matrix->data[i] = (2.0f * uniform - 1.0f) * limit;
+    }
+}
+
+// Free malloc'd memory for a Matrix struct.
+void free_matrix(Matrix *matrix) {
+    free(matrix->data);
+    matrix->data = NULL;
+    matrix->rows = 0;
+    matrix->cols = 0;
+}
 
 // Multiplies matrices A and B together, result in out.
 void matmul(const Matrix *A, const Matrix *B, Matrix *out) {
