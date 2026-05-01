@@ -6,8 +6,8 @@
 
 Dataset load_data(const char *filename, int n_samples) {
     Dataset data;
-    data.n = n_samples;    
-
+    data.n = n_samples;
+    
     FILE *file = fopen(filename, "r");
     if (!file) {
         perror("Error opening the file.\n");
@@ -23,10 +23,6 @@ Dataset load_data(const char *filename, int n_samples) {
     if (!data.x || !data.y) {
         perror("Error allocating memory.\n");
         fclose(file);
-        free(data.x);
-        free(data.y);
-        data.x = NULL;
-        data.y = NULL;
         data.n = 0;
         return data;
     }
