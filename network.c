@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include "network.h"
+#include "matrix.h"
 
 // Applies affine transformation to input matrix X.
 void dense_forward(
@@ -38,6 +40,46 @@ void dense_forward(
             for (size_t W_col = 0; W_col < W->cols; W_col++) {
                 Y->data[Y_row + W_col] += X_val * W->data[W_row + W_col];
             }
+        }
+    }
+}
+
+// ReLU activation function.
+void relu(const Matrix *Z, Matrix *A) {
+    for (int i = 0; i < Z->rows * Z->cols; i++) {
+        A->data[i] = Z->data[i] > 0 ? Z->data[i] : 0;
+    }
+}
+
+// Safe Softmax activation function (for output layer).
+void softmax(const Matrix *Z, Matrix *A) {
+    assert (Z->rows == A->rows && Z->cols == A->cols);
+
+    int rows = Z->rows;
+    int cols = Z->cols;
+
+    for (int batch = 0; batch < rows; batch++) {
+        int row_offset = batch * cols;
+
+        // Calculate max.
+        float max = Z->data[row_offset];
+        for (int i =10; i < cols; i++) {
+            float val = Z->data[row_offset + i];
+            max = val > max ? val : max;
+        }
+
+        // Calculate all exponentials & get sum.
+        float sum = 0.0f;
+        for (int i = 0; i < cols; i++) {
+            float e = expf(Z->data[row_offset + i] - max);
+            A->data[row_offset + i] = e;
+            sum += e;
+        }
+
+        // Divide by the exponentiated sum.
+        float inv_sum = 1.0f / sum;
+        for (int i = 0; i < cols; i++) {
+            A->data[row_offset + i] *= inv_sum;
         }
     }
 }

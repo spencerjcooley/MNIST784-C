@@ -33,4 +33,7 @@ void dense_forward(
     Matrix *Y
 );
 
+void relu(const Matrix *Z, Matrix *A);
+void softmax(const Matrix *Z, Matrix *A);
+
 #endif
