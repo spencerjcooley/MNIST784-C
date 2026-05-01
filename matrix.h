@@ -1,16 +1,14 @@
-#ifndef DATASET_H
-#define DATASET_H
+#ifndef MATRIX_H
+#define MATRIX_H
 
 typedef struct matrix {
     float *data;
-    int rows;
-    int cols;
+    size_t rows;
+    size_t cols;
 } Matrix;
 
-Matrix create_matrix(int rows, int cols);
-void init_matrix(Matrix *matrix);
+Matrix create_matrix(size_t rows, size_t cols);
+void init_matrix(Matrix *matrix, size_t fan_in);
 void free_matrix(Matrix *matrix);
-
-void matmul(const Matrix *A, const Matrix *B, Matrix *out);
 
 #endif
