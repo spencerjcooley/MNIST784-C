@@ -26,6 +26,11 @@ typedef struct {
     Matrix A3;
 } Network;
 
+Network create_network(size_t batch_size, size_t input_dim);
+void init_network(Network *network);
+void init_weights(Matrix *W, size_t fan_in);
+void init_biases(Matrix *B, float val);
+
 void dense_forward(
     const Matrix *X,
     const Matrix *W,
@@ -35,5 +40,7 @@ void dense_forward(
 
 void relu(const Matrix *Z, Matrix *A);
 void softmax(const Matrix *Z, Matrix *A);
+
+void free_weights(Network *network);
 
 #endif
