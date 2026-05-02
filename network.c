@@ -118,7 +118,7 @@ void softmax(const Matrix *Z, Matrix *A) {
 
         // Calculate max.
         float max = Z->data[row_offset];
-        for (size_t i =10; i < cols; i++) {
+        for (size_t i = 1; i < cols; i++) {
             float val = Z->data[row_offset + i];
             max = val > max ? val : max;
         }
