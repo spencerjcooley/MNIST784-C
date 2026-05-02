@@ -41,6 +41,8 @@ void dense_forward(
 void relu(const Matrix *Z, Matrix *A);
 void softmax(const Matrix *Z, Matrix *A);
 
+void forward_propagation(Network *network);
+
 void free_weights(Network *network);
 
 #endif
