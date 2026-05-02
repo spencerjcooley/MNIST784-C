@@ -31,16 +31,6 @@ Matrix create_matrix(size_t rows, size_t cols) {
     return output;
 }
 
-// He uniform initialisation for a matrix.
-void init_matrix(Matrix *matrix, size_t fan_in) {
-    float limit = sqrtf(6.0f / fan_in);
-
-    for (size_t i = 0; i < matrix->rows * matrix->cols; i++) {
-        float uniform = (float)rand() / (float)RAND_MAX;
-        matrix->data[i] = (2.0f * uniform - 1.0f) * limit;
-    }
-}
-
 // Free malloc'd memory for a Matrix struct (ONLY ON CREATED, NOT WRAPPED)
 void free_matrix(Matrix *matrix) {
     free(matrix->data);
