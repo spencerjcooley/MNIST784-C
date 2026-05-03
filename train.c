@@ -1,9 +1,11 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <math.h>
 
 #include "train.h"
+#include "dataset.h"
 #include "matrix.h"
 #include "network.h"
 
@@ -105,5 +107,37 @@ void sgd_update(Matrix *M, Matrix *dM, float lr) {
     size_t size = M->rows * M->cols;
     for (size_t i = 0; i < size; i++) {
         M->data[i] -= lr * dM->data[i];
+    }
+}
+
+void train(
+    Network *network,
+    Dataset *train,
+    size_t batch_size,
+    size_t epochs,
+    float lr
+) {
+    size_t n_batches = train->n / batch_size;
+
+    for (size_t epoch = 1; epoch <= epochs; epoch++) {
+        float epoch_loss = 0.0f;
+
+        for (size_t batch = 0; batch < n_batches; batch++) {
+            size_t offset = batch * batch_size;
+
+            Matrix X = wrap_matrix(
+                &train->x[offset * IMAGE_SIZE],
+                batch_size,
+                IMAGE_SIZE
+            );
+            int *Y = &train->y[offset];
+
+            forward_propagation(&X, network);
+            epoch_loss += cce_loss(&network->Z3, Y);
+            backward_propagation(network, &X, Y, lr);
+        }
+
+        epoch_loss /= n_batches;
+        printf("Epoch %03lu | Loss: %.5f\n", epoch, epoch_loss);
     }
 }
