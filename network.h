@@ -40,7 +40,7 @@ void dense_forward(
     Matrix *Y
 );
 
-void relu_backward(const Matrix *dA, const Matrix *Z);
+void relu_backward(const Matrix *dA, const Matrix *Z, Matrix *dZ);
 void dense_backward(
     const Matrix *dZ,
     const Matrix *A_prev,

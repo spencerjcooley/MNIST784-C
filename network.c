@@ -180,6 +180,9 @@ void dense_backward(
         }
     }
 
+    // Allow NULL for dA0 (unnecessary).
+    if (dA_prev == NULL) return;
+
     // A_prev derivative calculation (implicit transpose).
     assert(dA_prev->rows == dZ->rows && dA_prev->cols == W->rows);
     assert(dZ->cols == W->cols);

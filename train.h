@@ -14,5 +14,10 @@ typedef struct {
 
 void forward_propagation(const Matrix *input, Network *network);
 float cce_loss(const Matrix *logits, const int *labels);
+void backward_propagation(
+    Network *network,
+    const Matrix *input,
+    const int *labels
+);
 
 #endif
