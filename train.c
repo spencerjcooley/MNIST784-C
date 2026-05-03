@@ -47,7 +47,8 @@ float cce_loss(const Matrix *logits, const int *labels) {\
 void backward_propagation(
     Network *network,
     const Matrix *input,
-    const int *labels
+    const int *labels,
+    const float lr
 ) {
     size_t batch_size = network->Z3.rows;
 
@@ -79,4 +80,30 @@ void backward_propagation(
     Matrix dW1 = create_matrix(network->W1.rows, network->W1.cols);
     Matrix dB1 = create_matrix(network->B1.rows, network->B1.cols);
     dense_backward(&dZ1, input, &network->W1, &dW1, &dB1, NULL);
+
+    sgd_update(&network->W3, &dW3, lr);
+    sgd_update(&network->B3, &dB3, lr);
+    sgd_update(&network->W2, &dW2, lr);
+    sgd_update(&network->B2, &dB2, lr);
+    sgd_update(&network->W1, &dW1, lr);
+    sgd_update(&network->B1, &dB1, lr);
+
+    free_matrix(&dZ3);
+    free_matrix(&dW3);
+    free_matrix(&dB3);
+    free_matrix(&dA2);
+    free_matrix(&dZ2);
+    free_matrix(&dW2);
+    free_matrix(&dB2);
+    free_matrix(&dA1);
+    free_matrix(&dZ1);
+    free_matrix(&dW1);
+    free_matrix(&dB1);
+}
+
+void sgd_update(Matrix *M, Matrix *dM, float lr) {
+    size_t size = M->rows * M->cols;
+    for (size_t i = 0; i < size; i++) {
+        M->data[i] -= lr * dM->data[i];
+    }
 }

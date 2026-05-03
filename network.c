@@ -1,6 +1,7 @@
 #include <stdlib.h>
-#include <math.h>
 #include <assert.h>
+#include <string.h>
+#include <math.h>
 
 #include "network.h"
 #include "matrix.h"
