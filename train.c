@@ -1,8 +1,21 @@
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
-#include "matrix.h"
 #include "train.h"
+#include "matrix.h"
+#include "network.h"
+
+void forward_propagation(const Matrix *input, Network *network) {
+    dense_forward(input, &network->W1, &network->B1, &network->Z1);
+    relu(&network->Z1, &network->A1);
+
+    dense_forward(&network->A1, &network->W2, &network->B2, &network->Z2);
+    relu(&network->Z2, &network->A2);
+
+    dense_forward(&network->A2, &network->W3, &network->B3, &network->Z3);
+    softmax(&network->Z3, &network->A3);
+}
 
 // Categorical Cross Entropy Loss (for one hot encoded output layer).
 float cce_loss(const Matrix *logits, const int *label) {\

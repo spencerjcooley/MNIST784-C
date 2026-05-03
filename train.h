@@ -12,6 +12,7 @@ typedef struct {
     size_t batch_size;
 } HyperParams;
 
+void forward_propagation(const Matrix *input, Network *network);
 float cce_loss(const Matrix *logits, const int *labels);
 
 #endif
