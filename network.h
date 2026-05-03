@@ -31,6 +31,8 @@ void init_network(Network *network);
 void init_weights(Matrix *W, size_t fan_in);
 void init_biases(Matrix *B, float val);
 
+void relu(const Matrix *Z, Matrix *A);
+void softmax(const Matrix *Z, Matrix *A);
 void dense_forward(
     const Matrix *X,
     const Matrix *W,
@@ -38,10 +40,15 @@ void dense_forward(
     Matrix *Y
 );
 
-void relu(const Matrix *Z, Matrix *A);
-void softmax(const Matrix *Z, Matrix *A);
-
-void forward_propagation(const Matrix *input, Network *network);
+void relu_backward(const Matrix *dA, const Matrix *Z);
+void dense_backward(
+    const Matrix *dZ,
+    const Matrix *A_prev,
+    const Matrix *W,
+    Matrix *dW,
+    Matrix *dB,
+    Matrix *dA_prev
+);
 
 void free_network(Network *network);
 

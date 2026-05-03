@@ -139,15 +139,60 @@ void softmax(const Matrix *Z, Matrix *A) {
     }
 }
 
-void forward_propagation(const Matrix *input, Network *network) {
-    dense_forward(input, &network->W1, &network->B1, &network->Z1);
-    relu(&network->Z1, &network->A1);
+void relu_backward(const Matrix *dA, const Matrix *Z, Matrix *dZ) {
+    assert(dA->rows == Z->rows && dA->cols == Z->cols);
+    size_t rows = Z->rows;
+    size_t cols = Z->cols;
 
-    dense_forward(&network->A1, &network->W2, &network->B2, &network->Z2);
-    relu(&network->Z2, &network->A2);
+    assert(dZ->rows == rows && dZ->cols == cols);
+    for (size_t i = 0; i < rows * cols; i++) {
+        dZ->data[i] = dA->data[i] * (float)(Z->data[i] > 0);
+    }
+}
 
-    dense_forward(&network->A2, &network->W3, &network->B3, &network->Z3);
-    softmax(&network->Z3, &network->A3);
+void dense_backward(
+    const Matrix *dZ,
+    const Matrix *A_prev,
+    const Matrix *W,
+    Matrix *dW,
+    Matrix *dB,
+    Matrix *dA_prev
+) {
+    // Bias derivative calculation.
+    assert(dB->rows == 1 && dB->cols == dZ->cols);
+    memset(dB->data, 0, dB->cols * sizeof(float));
+    for (size_t batch = 0; batch < dZ->rows; batch++) {
+        for (size_t neuron = 0; neuron < dZ->cols; neuron++) {
+            dB->data[neuron] += dZ->data[batch * dZ->cols + neuron];
+        }
+    }
+
+    // Weight derivative calculation (implicit transpose).
+    assert(dW->rows == A_prev->cols && dW->cols == dZ->cols);
+    memset(dW->data, 0, dW->rows * dW->cols * sizeof(float));
+    for (size_t A_prev_row = 0; A_prev_row < A_prev->rows; A_prev_row++) {
+        for (size_t A_prev_col = 0; A_prev_col < A_prev->cols; A_prev_col++) {
+            for (size_t dZ_col = 0; dZ_col < dZ->cols; dZ_col++) {
+                float A_prev_val = A_prev->data[A_prev_row * A_prev->cols + A_prev_col];
+                float dZ_val = dZ->data[A_prev_row * dZ->cols + dZ_col];
+                dW->data[A_prev_col * dZ->cols + dZ_col] += A_prev_val * dZ_val;
+            }
+        }
+    }
+
+    // A_prev derivative calculation (implicit transpose).
+    assert(dA_prev->rows == dZ->rows && dA_prev->cols == W->rows);
+    assert(dZ->cols == W->cols);
+    size_t inner = W->cols;
+    for (size_t dZ_row = 0; dZ_row < dZ->rows; dZ_row++) {
+        for (size_t W_row = 0; W_row < W->rows; W_row++) {
+            float sum = 0.0f;
+            for (size_t i = 0; i < inner; i++) {
+                sum += dZ->data[dZ_row * dZ->cols + i] * W->data[W_row * W->cols + i];
+            }
+            dA_prev->data[dZ_row * dA_prev->cols + W_row] = sum;
+        }
+    }
 }
 
 void free_network(Network *network) {
