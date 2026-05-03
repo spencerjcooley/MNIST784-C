@@ -27,4 +27,6 @@ void train(
     float lr
 );
 
+void test (Network *network, Dataset *test, size_t batch_size);
+
 #endif

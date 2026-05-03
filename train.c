@@ -141,3 +141,47 @@ void train(
         printf("Epoch %03lu | Loss: %.5f\n", epoch, epoch_loss);
     }
 }
+
+void test(Network *network, Dataset *test, size_t batch_size) {
+    size_t n_batches = test->n / batch_size;
+
+    float total_loss = 0.0f;
+    size_t correct = 0;
+    size_t total = 0;
+
+    for (size_t batch = 0; batch < n_batches; batch++) {
+        size_t offset = batch * batch_size;
+
+        Matrix X = wrap_matrix(
+            &test->x[offset * IMAGE_SIZE],
+            batch_size,
+            IMAGE_SIZE
+        );
+        int *Y = &test->y[offset];
+
+        forward_propagation(&X, network);
+        total_loss += cce_loss(&network->Z3, Y);
+
+        // Accuracy
+        for (size_t sample = 0; sample < batch_size; sample++) {
+            size_t row_offset = sample * network->A3.cols;
+            size_t pred = 0;
+            float best = network->A3.data[row_offset];
+            for (size_t neuron = 1; neuron < network->A3.cols; neuron++) {
+                float v = network->A3.data[row_offset + neuron];
+                if (v > best) {
+                    best = v;
+                    pred = neuron;
+                }
+            }
+            if ((int)pred == Y[sample]) correct++;
+        }
+
+        total += batch_size;
+    }
+
+    total_loss /= n_batches;
+    float accuracy = (float)correct / (float)total * 100.0f;
+
+    printf("TEST | Loss: %.5f | Accuracy: %.2f%%\n", total_loss, accuracy);
+}

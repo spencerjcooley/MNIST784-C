@@ -9,8 +9,8 @@
 #include "network.h"
 #include "train.h"
 
-#define BATCH_SIZE 10
-#define EPOCHS 10
+#define BATCH_SIZE 25
+#define EPOCHS 20
 #define LEARNING_RATE 0.01
 
 
@@ -31,6 +31,9 @@ int main(void) {
     Network network = create_network(BATCH_SIZE, IMAGE_SIZE);
     init_network(&network);
     train(&network, &train_set, BATCH_SIZE, EPOCHS, LEARNING_RATE);
+
+    // === Testing ===
+    test(&network, &test_set, BATCH_SIZE);
 
     // === Memory ===
     free_network(&network);
